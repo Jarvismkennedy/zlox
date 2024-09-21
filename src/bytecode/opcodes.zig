@@ -1,7 +1,4 @@
-pub const Code = enum {
+pub const OpCode = enum {
+    op_constant,
     op_return,
 };
-
-pub fn get_instuction(byte: Code) []const u8 {
-    return @tagName(byte);
-}
