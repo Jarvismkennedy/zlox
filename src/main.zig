@@ -14,12 +14,11 @@ pub fn main() !void {
     defer machine.deinit();
     var chunk: Chunk = Chunk.init(allocator);
     defer chunk.deinit();
-
     // defer chunk.deinit();
     chunk.write_op_code(OpCode.op_return, 123);
     const name = "test_chunk";
     zl_debug.dissassemble_chunk(&chunk, name);
-
+    _ = machine.interpret(&chunk) catch unreachable;
     std.process.exit(0);
 }
 

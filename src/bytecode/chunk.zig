@@ -3,12 +3,12 @@ const ValueType = @import("./values.zig").ValueType;
 const OpCode = @import("./opcodes.zig").OpCode;
 const Allocator = std.mem.Allocator;
 
-const InstructionSize = u8;
-const LineSize = u64;
+pub const ByteCode = u8;
+pub const LineSize = u64;
 
-const ByteCodeArrayList = std.ArrayList(InstructionSize);
-const LineArrayList = std.ArrayList(LineSize);
-const ValueArrayList = std.ArrayList(ValueType);
+pub const ByteCodeArrayList = std.ArrayList(ByteCode);
+pub const LineArrayList = std.ArrayList(LineSize);
+pub const ValueArrayList = std.ArrayList(ValueType);
 
 const zl_debug = @import("../debug/zlox_debug.zig");
 
@@ -34,10 +34,10 @@ pub const Chunk = struct {
         self.lines_array.deinit();
     }
     pub fn write_op_code(self: *Chunk, byte: OpCode, line: LineSize) void {
-        self.byte_code_array.append(@as(InstructionSize, @intFromEnum(byte))) catch unreachable;
+        self.byte_code_array.append(@as(ByteCode, @intFromEnum(byte))) catch unreachable;
         self.lines_array.append(line) catch unreachable;
     }
-    pub fn byte_code_at(self: *Chunk, offset: usize) InstructionSize {
+    pub fn byte_code_at(self: *Chunk, offset: usize) ByteCode {
         std.debug.assert(offset < self.byte_code_array.items.len);
         return self.byte_code_array.items[offset];
     }
@@ -54,13 +54,13 @@ pub const Chunk = struct {
     /// We can only store 256 constants per chunk currently because the index into the values array is stored in the
     /// byte_code_array ([]u8)
     fn write_constant_byte_code(self: *Chunk, offset: usize, line: LineSize) void {
-        std.debug.assert(offset < @sizeOf(InstructionSize));
+        std.debug.assert(offset < @sizeOf(ByteCode));
         self.byte_code_array.append(@intCast(offset)) catch unreachable;
         self.lines_array.append(line) catch unreachable;
     }
-    fn add_const(self: *Chunk, value: ValueType) InstructionSize {
+    fn add_const(self: *Chunk, value: ValueType) ByteCode {
         self.value_array.append(value) catch unreachable;
-        std.debug.assert(self.value_array.items.len <= @sizeOf(InstructionSize));
+        std.debug.assert(self.value_array.items.len <= @sizeOf(ByteCode));
         return @intCast(self.value_array.items.len - 1);
     }
 

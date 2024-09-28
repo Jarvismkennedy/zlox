@@ -36,6 +36,16 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
+    // check if compiles
+    const exe_check = b.addExecutable(.{
+        .name = "zlox",
+        .root_source_file = b.path("src/main.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    const check = b.step("check", "check if compiles");
+    check.dependOn(&exe_check.step);
+
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
     // step when running `zig build`).
